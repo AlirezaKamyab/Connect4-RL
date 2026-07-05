@@ -45,6 +45,7 @@ class ConnectFour(gym.Env):
         self.window = None
         self.clock = None
         self.fps = kwargs.get('fps', 60)
+        self.__text_board = ""
 
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
@@ -63,10 +64,24 @@ class ConnectFour(gym.Env):
             self._render_frame()
 
         return self.state
+    
+    def is_valid_action(self, action):
+        next_row = np.sum(self.state[:, action] > 0)
+        next_row = self.nrows - next_row - 1
+        if next_row >= 0:
+            return True
+        return False
+    
+    def get_valid_actions(self):
+        actions = []
+        for a in range(self.ncols):
+            if self.is_valid_action(a):
+                actions.append(a)
+        return actions
 
     def step(self, action, player:int=1):
         if self.terminated:
-            self.state, (0, 0), self.terminated
+            return self.state, (0, 0), self.terminated
         if self.state is None:
             raise ValueError("Please reset the environment first")
         if action < 0 or action >= self.ncols:
@@ -105,6 +120,9 @@ class ConnectFour(gym.Env):
         
         if np.sum(self.state == 0) == 0:
             return True, winner
+        
+        if len(self.get_valid_actions()) == 0:
+            return True, 0
         
         return False, winner
     
@@ -149,7 +167,7 @@ class ConnectFour(gym.Env):
                 
                 # Check Diagonal (Left-Down)
                 winner = True
-                if i + self.connect <= self.nrows and j - self.connect >= 0:
+                if i + self.connect <= self.nrows and j - self.connect >= -1:
                     for c in range(1, self.connect):
                         if self.state[i + c][j - c] != current_player:
                             winner = False
@@ -176,6 +194,7 @@ class ConnectFour(gym.Env):
             self.clock = pygame.time.Clock()
 
         self.renderer.draw()
+        self.render_text()
 
         if self.render_mode == 'human':
             self.window.blit(self.renderer.screen, self.renderer.screen.get_rect())
@@ -187,6 +206,16 @@ class ConnectFour(gym.Env):
                 np.array(pygame.surfarray.pixels3d(self.renderer.screen)), axes=(1, 0, 2)
             )
 
+    def update_text(self, text:str):
+        self.__text_board = text
+        
+    def render_text(self):
+        font = pygame.font.Font(pygame.font.get_default_font(), 30)
+        text = font.render(self.__text_board, True, (0, 0, 0))
+        rect = text.get_rect(center=(
+            self.renderer.screen_width // 2, self.renderer.voffset // 2
+        ))
+        self.renderer.screen.blit(text, rect)
 
     def render(self):
         # Implement rendering logic here

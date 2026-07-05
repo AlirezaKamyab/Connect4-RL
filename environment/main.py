@@ -7,9 +7,9 @@ from renderer import ConnectFourRenderer
 def main():
     pygame.init()
     settings = {
-        'screen_width': 1000,
-        'screen_height': 800,
-        'voffset': 200
+        'screen_width': 1500,
+        'screen_height': 900,
+        'voffset': 50
     }
     board = ConnectFour(ncols=7, nrows=6, connect=4, render_mode='human', **settings)
     board.reset()
@@ -23,7 +23,11 @@ def main():
                 entry_pos = board.renderer.position_to_entry(mouse_pos)
                 if entry_pos is not None and not board.terminated:
                     _, col = entry_pos
+                    if not board.is_valid_action(col):
+                        print("Please input a valid action")
+                        continue
                     state, rewards, terminated = board.step(col, player=player)
+                    print(state)
                     player += 1
                     if player == 3: player = 1
                     print(rewards, 'player turn is', player)
