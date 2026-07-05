@@ -159,6 +159,7 @@ Potential future extensions include:
 # Future changes
 This repository is incomplete. Since I am researching in this area, I might update it later.
 
+# References
 - Victor Allis. *A Knowledge-based Approach of Connect-Four*. Master's Thesis, Vrije Universiteit Amsterdam, 1988. :contentReference[oaicite:2]{index=2}
 - James Dow Allen. *Expert Play in Connect-Four*. 1990. :contentReference[oaicite:3]{index=3}
 - Sutton, R. S., & Barto, A. G. *Reinforcement Learning: An Introduction (2nd Edition).*
